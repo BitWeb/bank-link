@@ -50,7 +50,7 @@ abstract class Constants
      * Saaja konto number
      */
     const ACC = 'VK_ACC';
-    const ACC_LENGTH = 16;
+    const ACC_LENGTH = 20;
 
     /**
      * Maksekorralduse viitenumber
@@ -74,13 +74,13 @@ abstract class Constants
      * Saaja konto number
      */
     const REC_ACC = 'VK_REC_ACC';
-    const REC_ACC_LENGTH = 16;
+    const REC_ACC_LENGTH = 20;
 
     /**
      * Maksja konto number
      */
     const SND_ACC = 'VK_SND_ACC';
-    const SND_ACC_LENGTH = 16;
+    const SND_ACC_LENGTH = 20;
 
     /**
      * Maksekorralduse kuupäev

@@ -52,10 +52,7 @@ final class Parameter
 
     public function getFormattedValue()
     {
-        if (strstr($this->value, 'õ') || strstr($this->value, 'Ü')) {
-            return (string)trim(substr($this->value, 0, $this->length - 1));
-        }
-        return (string)trim(substr($this->value, 0, $this->length));
+        return (string)trim(mb_substr($this->value, 0, $this->length));
     }
 
     public function getValue()

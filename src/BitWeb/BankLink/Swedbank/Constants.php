@@ -26,4 +26,6 @@ abstract class Constants extends BankLink\Constants
     const SND_NAME_LENGTH = 40;
     const RETURN_URL_LENGTH = 60;
     const BANK_ID = 'HP';
+    const ENCODING = 'VK_ENCODING';
+    const ENCODING_LENGTH = 10;
 }
