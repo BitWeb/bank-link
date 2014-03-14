@@ -9,7 +9,7 @@ namespace BitWeb\BankLink;
  *
  * @link http://www.pangaliit.ee/images/files/Dokumendid/BBAN-IBAN_php.pdf
  *
- * Undefined offset fixes by BitWeb OÜ
+ * Undefined offset fixes by Rain Ramm, BitWeb OÜ, rain@bitweb.ee
  */
 class IbanConverter
 {
@@ -20,7 +20,7 @@ class IbanConverter
      * Array of valid bankcodes
      * @var array
      */
-    private $bankCodes = array(
+    private static $bankCodes = array(
         16 => 16,
         10 => 10,
         33 => 33,
@@ -42,7 +42,7 @@ class IbanConverter
      * List of valid bank specific BBAN lengths
      * @var array
      */
-    private $lengths = array(
+    private static $lengths = array(
         16 => array(
             9,
             10,
@@ -94,7 +94,7 @@ class IbanConverter
             14
         )
     );
-    private $digits = array(
+    private static $digits = array(
         '0',
         '1',
         '2',
@@ -138,22 +138,22 @@ class IbanConverter
      * @param string $bban
      * @return mixed BBAN if the the conversion was successful, false otherwise
      */
-    public function bban2iban($bban)
+    public static function bban2iban($bban)
     {
         // Check for valid symbols
-        if (!$this->isBbanValid($bban)) {
+        if (!self::isBbanValid($bban)) {
             return FALSE;
         }
 
         // Extract bank code
-        $bankCode = $this->getBankCodeFromBban($bban);
+        $bankCode = self::getBankCodeFromBban($bban);
         if (FALSE === $bankCode) {
             return FALSE;
         }
 
         // Pad to required length
-        $this->padBbanLength($bban);
-        return $this->getIbanFromBban($bankCode, $bban);
+        self::padBbanLength($bban);
+        return self::getIbanFromBban($bankCode, $bban);
     }
 
     /**
@@ -161,7 +161,7 @@ class IbanConverter
      * @param string $bban
      * @return boolean True if BBAN is valid, false otherwise
      */
-    private function isBbanValid($bban)
+    private static function isBbanValid($bban)
     {
         $bban = str_replace(' ', '', $bban);
         // check if its a number
@@ -174,11 +174,11 @@ class IbanConverter
         }
         // identify which banks code it is and check for that banks code length
         $bankCode = substr($bban, 0, 2);
-        if (isset($this->lengths[$bankCode]) && is_array($this->lengths[$bankCode]) && !in_array(strlen($bban), $this->lengths[$bankCode]))
+        if (isset(self::$lengths[$bankCode]) && is_array(self::$lengths[$bankCode]) && !in_array(strlen($bban), self::$lengths[$bankCode]))
             return FALSE;
 
         // validate checksum
-        return $this->is731ChecksumValid($bban);
+        return self::is731ChecksumValid($bban);
     }
 
     /**
@@ -186,7 +186,7 @@ class IbanConverter
      * @param string $bban
      * @return boolean True if checksum is valid, false otherwise
      */
-    private function is731ChecksumValid($bban)
+    private static function is731ChecksumValid($bban)
     {
         $sum = 0;
         $parts = array(
@@ -223,20 +223,20 @@ class IbanConverter
      * @param string $bban
      * @return mixed 2 digit bank code if it exists, false if it doesn't
      */
-    private function getBankCodeFromBban($bban)
+    private static function getBankCodeFromBban($bban)
     {
         $bankCode = substr($bban, 0, 2);
-        if (!array_key_exists($bankCode, $this->bankCodes)) {
+        if (!array_key_exists($bankCode, self::$bankCodes)) {
             return FALSE;
         }
-        return $this->bankCodes[$bankCode];
+        return self::$bankCodes[$bankCode];
     }
 
     /**
      * Pads BBAN number to required length with zeros
      * @param string $bban
      */
-    private function padBbanLength(&$bban)
+    private static function padBbanLength(&$bban)
     {
         if (self::ACCOUNT_LENGTH > strlen($bban)) {
             $bban = str_pad($bban, self::ACCOUNT_LENGTH, '0', STR_PAD_LEFT);
@@ -249,7 +249,7 @@ class IbanConverter
      * @param string $bban
      * @return string valid BBAN code
      */
-    private function getIbanFromBban($bankCode, $bban)
+    private static function getIbanFromBban($bankCode, $bban)
     {
         $hash = 'EE00' . $bankCode . $bban;
 
@@ -257,12 +257,12 @@ class IbanConverter
         $part = substr($hash, 0, 4);
         $hash = substr($hash, -(strlen($hash) - 4)) . $part;
 
-        $this->convertDigits($hash);
-        $checkDigits = $this->applyMod9710($hash);
+        self::convertDigits($hash);
+        $checkDigits = self::applyMod9710($hash);
         return 'EE' . $checkDigits . $bankCode . $bban;
     }
 
-    private function applyMod9710($s)
+    private static function applyMod9710($s)
     {
         $result = 98 - (int)bcmod($s, 97);
         if (2 > strlen($result)) {
@@ -275,13 +275,13 @@ class IbanConverter
      * Convert the alphabetical characters into numbers.
      * @param string
      */
-    private function convertDigits(&$hash)
+    private static function convertDigits(&$hash)
     {
         $newHash = '';
         for ($i = 0; $i < strlen($hash); $i++) {
             $symbol = $hash[$i];
             if (!is_numeric($symbol)) {
-                $symbol = array_search($symbol, $this->digits);
+                $symbol = array_search($symbol, self::$digits);
             }
             $newHash .= $symbol;
         }
