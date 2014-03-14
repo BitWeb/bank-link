@@ -643,7 +643,12 @@ abstract class BankLink
         return $this->orders;
     }
 
-    // http://www.pangaliit.ee/et/arveldused/7-3-1meetod
+    /**
+     * @link http://www.pangaliit.ee/et/arveldused/7-3-1meetod
+     *
+     * @param $nr
+     * @return string
+     */
     public static function generateReferenceNumber($nr)
     {
         $nr = (string)$nr;
@@ -737,7 +742,7 @@ abstract class BankLink
             case 83:
                 return 'Svenska Handelsbanken';
             case 51:
-                return 'Pohjola Bank';
+                return 'Pohjola Bank plc Eesti filiaal';
             case 77:
                 return 'LHV Pank';
             case 75:
