@@ -16,5 +16,13 @@ class IbanConverterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('EE912200001107481602', IbanConverter::bban2iban('1107481602'));
         $this->assertEquals('EE951010010106474015', IbanConverter::bban2iban('10010106474015'));
         $this->assertEquals('EE962200221024670855', IbanConverter::bban2iban('221024670855'));
+        $this->assertFalse(IbanConverter::bban2iban('22102467085'));
+        $this->assertFalse(IbanConverter::bban2iban('ananana'));
+        $this->assertFalse(IbanConverter::bban2iban('12345'));
     }
-} 
+
+    public function testIbanReturnsFalse()
+    {
+        $this->assertFalse(IbanConverter::bban2iban('EE023300335751330008'));
+    }
+}
