@@ -1,3 +1,3 @@
 bank-link
 =========
-Banklink and bank related class.
+Banklink and bank related classes.
