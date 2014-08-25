@@ -9,7 +9,7 @@ namespace BitWeb\BankLink;
  *
  * @link http://www.pangaliit.ee/images/files/Dokumendid/BBAN-IBAN_php.pdf
  *
- * Undefined offset fixes by Rain Ramm, BitWeb OÜ, rain@bitweb.ee
+ * Undefined offset and CS fixes by Rain Ramm, BitWeb LLC, rain@bitweb.ee
  */
 class IbanConverter
 {
@@ -20,7 +20,7 @@ class IbanConverter
      * Array of valid bankcodes
      * @var array
      */
-    private static $bankCodes = array(
+    private static $bankCodes = [
         16 => 16,
         10 => 10,
         33 => 33,
@@ -36,65 +36,65 @@ class IbanConverter
         77 => 77,
         51 => 51,
         75 => 75
-    );
+    ];
 
     /**
      * List of valid bank specific BBAN lengths
      * @var array
      */
-    private static $lengths = array(
-        16 => array(
+    private static $lengths = [
+        16 => [
             9,
             10,
             12
-        ),
-        10 => array(
+        ],
+        10 => [
             9,
             14
-        ),
-        33 => array(
+        ],
+        33 => [
             12
-        ),
-        42 => array(
+        ],
+        42 => [
             13
-        ),
-        22 => array(
+        ],
+        22 => [
             6,
             12
-        ),
-        11 => array(
+        ],
+        11 => [
             10
-        ),
-        55 => array(
+        ],
+        55 => [
             9
-        ),
-        93 => array(
+        ],
+        93 => [
             10
-        ),
-        17 => array(
+        ],
+        17 => [
             8,
             11
-        ),
-        12 => array(
+        ],
+        12 => [
             10
-        ),
-        96 => array(
+        ],
+        96 => [
             13
-        ),
-        83 => array(
+        ],
+        83 => [
             10
-        ),
-        77 => array(
+        ],
+        77 => [
             12
-        ),
-        51 => array(
+        ],
+        51 => [
             10
-        ),
-        75 => array(
+        ],
+        75 => [
             14
-        )
-    );
-    private static $digits = array(
+        ]
+    ];
+    private static $digits = [
         '0',
         '1',
         '2',
@@ -131,7 +131,7 @@ class IbanConverter
         'X',
         'Y',
         'Z'
-    );
+    ];
 
     /**
      * Main function that converts BBAN to IBAN
@@ -189,7 +189,7 @@ class IbanConverter
     private static function is731ChecksumValid($bban)
     {
         $sum = 0;
-        $parts = array(
+        $parts = [
             7,
             3,
             1,
@@ -205,7 +205,7 @@ class IbanConverter
             7,
             3,
             1
-        );
+        ];
         $accountNr = substr($bban, 0, strlen($bban) - 1);
         $z = 0;
         for ($i = (strlen($accountNr) - 1); $i > -1; $i--) {

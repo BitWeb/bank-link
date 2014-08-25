@@ -1,6 +1,8 @@
 <?php
 
-namespace BitWeb\BankLink;
+namespace BitWebTest\BankLink;
+
+use BitWeb\BankLink\BankLink;
 
 class BankLinkTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,7 +1,8 @@
 <?php
 
-namespace BitWeb\BankLink;
+namespace BitWebTest\BankLink;
 
+use BitWeb\BankLink\IbanConverter;
 
 class IbanConverterTest extends \PHPUnit_Framework_TestCase
 {
