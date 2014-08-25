@@ -606,10 +606,15 @@ abstract class BankLink
             if (null === $value) {
                 throw new Exception('"' . $order . '" has to be setted');
             }
-            $length = $this instanceof SwedBank ? mb_strlen($value, 'UTF-8') : strlen($value);
+            $length = $this->getValueStringLength($value);
             $data .= str_pad($length, 3, '0', STR_PAD_LEFT) . $value;
         }
         return $data;
+    }
+
+    protected function getValueStringLength($value)
+    {
+        return strlen($value);
     }
 
     /**

@@ -156,4 +156,8 @@ final class SwedBank extends BankLink
         $this->addMacParameter(Constants::TIME, Constants::TIME_LENGTH);
     }
 
+    protected function getValueStringLength($value)
+    {
+        return mb_strlen($value, 'UTF-8');
+    }
 }
