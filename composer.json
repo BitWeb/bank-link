@@ -1,0 +1,17 @@
+{
+    "name": "bitweb/bank-link",
+    "description": "BitWeb bank links for Estonian banks.",
+    "license": "proprietary",
+    "homepage": "http://bitweb.ee/",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "": ["src/", "test/"]
+        }
+    }
+}

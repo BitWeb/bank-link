@@ -645,7 +645,12 @@ abstract class BankLink
         return $this->orders;
     }
 
-    // http://www.pangaliit.ee/et/arveldused/7-3-1meetod
+    /**
+     * @link http://www.pangaliit.ee/et/arveldused/7-3-1meetod
+     *
+     * @param $nr
+     * @return string
+     */
     public static function generateReferenceNumber($nr)
     {
         $nr = (string)$nr;
@@ -689,14 +694,24 @@ abstract class BankLink
                 return 'Nordea';
             case 42:
                 return 'Krediidipank';
+            case 16:
+                return 'Eesti Pank';
+            case 55:
+                return 'Versobank';
             case 12:
                 return 'Citadele Pank';
             case 77:
                 return 'LHV Pank';
+            case 83:
+                return 'Svenska Handelsbanken';
+            case 51:
+                return 'Pohjola Bank plc Eesti filiaal';
             case 96:
                 return 'Bank DnB NORD';
             case 93:
                 return 'Tallinna Äripank';
+            case 75:
+                return 'BIGBANK AS';
             default:
                 return 'Unknown';
         }
@@ -729,7 +744,7 @@ abstract class BankLink
             case 83:
                 return 'Svenska Handelsbanken';
             case 51:
-                return 'Pohjola Bank';
+                return 'Pohjola Bank plc Eesti filiaal';
             case 77:
                 return 'LHV Pank';
             case 75:
