@@ -2,6 +2,7 @@
 
 namespace BitWeb\BankLink;
 
+use BitWeb\BankLink\Swedbank\SwedBank;
 /**
  * Main BankLink class that represents actions for bank links
  *
@@ -605,9 +606,15 @@ abstract class BankLink
             if (null === $value) {
                 throw new Exception('"' . $order . '" has to be setted');
             }
-            $data .= str_pad(strlen($value), 3, '0', STR_PAD_LEFT) . $value;
+            $length = $this->getValueStringLength($value);
+            $data .= str_pad($length, 3, '0', STR_PAD_LEFT) . $value;
         }
         return $data;
+    }
+
+    protected function getValueStringLength($value)
+    {
+        return strlen($value);
     }
 
     /**

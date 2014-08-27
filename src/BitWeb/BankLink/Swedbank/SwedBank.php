@@ -28,6 +28,11 @@ final class SwedBank extends BankLink
      * @var string
      */
     protected $bankId = Constants::BANK_ID;
+    
+    /**
+     * @var string
+     */
+    private $encoding = 'UTF-8';
 
     /* (non-PHPdoc)
      * @see BankLink/BankLink#setSpecificParameters()
@@ -35,6 +40,7 @@ final class SwedBank extends BankLink
     protected function setSpecificParameters()
     {
         $this->addParameter(Constants::MAC, Constants::MAC_LENGTH);
+        $this->addParameter(Constants::ENCODING, Constants::ENCODING_LENGTH, $this->encoding);
     }
 
     /**
@@ -100,6 +106,7 @@ final class SwedBank extends BankLink
         $this->addMacParameter(Constants::T_DATE, Constants::T_DATE_LENGTH);
         $this->addParameter(Constants::LANG, Constants::LANG_LENGTH, $this->langauge);
         $this->addParameter(Constants::AUTO, Constants::AUTO_LENGTH);
+        $this->addParameter(Constants::ENCODING, Constants::ENCODING_LENGTH, $this->encoding);
     }
 
     /**
@@ -149,4 +156,8 @@ final class SwedBank extends BankLink
         $this->addMacParameter(Constants::TIME, Constants::TIME_LENGTH);
     }
 
+    protected function getValueStringLength($value)
+    {
+        return mb_strlen($value, 'UTF-8');
+    }
 }
