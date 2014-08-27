@@ -68,7 +68,7 @@ abstract class Constants
      * Maksekorralduse number
      */
     const T_NO = 'VK_T_NO';
-    const T_NO_LENGTH = 5;
+    const T_NO_LENGTH = 6;
 
     /**
      * Saaja konto number
@@ -143,7 +143,7 @@ abstract class Constants
      * Kontrollkood e. allkiri
      */
     const MAC = 'VK_MAC';
-    const MAC_LENGTH = 300;
+    const MAC_LENGTH = 700;
 
     /**
      * URL, kuhu vastatakse edukal tehingu sooritamisel
