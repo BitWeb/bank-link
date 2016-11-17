@@ -178,4 +178,10 @@ abstract class Constants
     const NONCE = 'VK_NONCE';
     const NONCE_LENGTH = 50;
 
+    const DATETIME = 'VK_DATETIME';
+    const DATETIME_LENGTH = 24;
+
+    const RID = 'VK_RID';
+    const RID_LENGTH = 30;
+
 }

@@ -95,7 +95,7 @@ abstract class BankLink
 
     /**
      * Client reference number
-     * @var Client account number
+     * @var string
      */
     protected $referenceNumber;
 
@@ -253,7 +253,7 @@ abstract class BankLink
     /**
      * Sets bank public key for verifying operation
      * @param string $certification Bank public key
-     * @return BankLinkObject
+     * @return BankLink object
      */
     public function setCertification($certification)
     {
@@ -285,7 +285,7 @@ abstract class BankLink
 
     /**
      * Gets bank URL where to submit
-     * @return Bank URL
+     * @return string URL
      */
     public function getUrl()
     {
@@ -317,7 +317,7 @@ abstract class BankLink
     /**
      * Creates request and response methods for communicating bank
      * @param integer $service Service that is used for current action
-     * @return true if dealing has been cancelled false otherwise
+     * @return boolean true if dealing has been cancelled false otherwise
      * @throws Exception when there are no such method
      */
     public function create($service)
@@ -339,7 +339,7 @@ abstract class BankLink
 
     /**
      * Gets right response method and load right values from request
-     * @return create() return value
+     * @return boolean create() return value
      */
     public function getResponse()
     {
@@ -545,7 +545,7 @@ abstract class BankLink
 
     /**
      * Generates uniq nonce value
-     * @return Unique nonce
+     * @return string Unique nonce
      */
     protected function generateNonce()
     {
@@ -555,11 +555,12 @@ abstract class BankLink
     /**
      * Calculates MAC value over client private key and sets it
      * @throws Exception when signing fails
-     * @return MAC signature
+     * @return string MAC signature
      */
     protected function calculateMac()
     {
-        $privateKeyContents = file_get_contents($this->privateKey);
+        //$privateKeyContents = file_get_contents($this->privateKey);
+        $privateKeyContents = $this->privateKey;
         $privateKey = openssl_get_privatekey($privateKeyContents, $this->passPhrase);
 
         $signature = null;
@@ -595,7 +596,7 @@ abstract class BankLink
 
     /**
      * Calculates MAC source by mandatory values
-     * @return MAC source
+     * @return string MAC source
      */
     private function getMacSource()
     {

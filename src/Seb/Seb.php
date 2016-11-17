@@ -222,4 +222,31 @@ final class Seb extends BankLink
         $this->addMacParameter(Constants::RETURN_URL, Constants::RETURN_URL_LENGTH, $this->returnUrl);
     }
 
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3012.
+     */
+    protected function create4011() {
+        $this->addCommonParameters(4011);
+        $this->addMacParameter(Constants::SND_ID, Constants::SND_ID_LENGTH, $this->storeId);
+        $this->addMacParameter(Constants::REPLY, Constants::REPLY_LENGTH, 3012);
+        $this->addMacParameter(Constants::RETURN_URL, 255, $this->returnUrl);
+        $this->addMacParameter(Constants::DATETIME, Constants::DATETIME_LENGTH);
+        $this->addMacParameter(Constants::RID, Constants::RID_LENGTH);
+    }
+
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3013.
+     */
+    protected function create4012() {
+        $this->addCommonParameters(4012);
+        $this->addMacParameter(Constants::SND_ID, 15, $this->storeId);
+        $this->addMacParameter(Constants::REC_ID, 15);
+        $this->addMacParameter(Constants::NONCE, 50);
+        $this->addMacParameter(Constants::RETURN_URL, 255, $this->returnUrl);
+        $this->addMacParameter(Constants::DATETIME, 24);
+        $this->addMacParameter(Constants::RID, 30);
+    }
+
 }

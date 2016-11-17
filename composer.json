@@ -10,8 +10,15 @@
         "phpunit/PHPUnit": "3.7.*"
     },
     "autoload": {
-        "psr-0": {
-            "": ["src/", "test/"]
+        "psr-4": {
+            "BitWeb\\BankLink\\": "src/",
+            "BitWebTest\\BankLink\\" : "test/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BitWeb\\BankLink\\": "src/",
+            "BitWebTest\\BankLink\\" : "test/"
         }
     }
 }
