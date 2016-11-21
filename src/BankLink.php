@@ -146,7 +146,7 @@ abstract class BankLink
      * Bank public key
      * @var string
      */
-    private $certification;
+    private $bankCertificte;
 
     /**
      * Passphrase for client private key
@@ -252,12 +252,12 @@ abstract class BankLink
 
     /**
      * Sets bank public key for verifying operation
-     * @param string $certification Bank public key
+     * @param string $bankCertificate PEM encoded bank's public key
      * @return BankLink object
      */
-    public function setCertification($certification)
+    public function setBankCertificate($bankCertificate)
     {
-        $this->certification = $certification;
+        $this->bankCertificte = $bankCertificate;
         return $this;
     }
 
@@ -559,7 +559,6 @@ abstract class BankLink
      */
     protected function calculateMac()
     {
-        //$privateKeyContents = file_get_contents($this->privateKey);
         $privateKeyContents = $this->privateKey;
         $privateKey = openssl_get_privatekey($privateKeyContents, $this->passPhrase);
 
@@ -584,7 +583,7 @@ abstract class BankLink
      */
     protected function verifyMac()
     {
-        $certificate = file_get_contents($this->certification);
+        $certificate = $this->bankCertificte;
 
         $publicKeyId = openssl_get_publickey($certificate);
         $isVerified = openssl_verify($this->getMacSource(), base64_decode($this->parameters[Constants::MAC]->getFormattedValue()), $publicKeyId);
@@ -606,7 +605,7 @@ abstract class BankLink
             if (null === $value) {
                 throw new Exception('"' . $order . '" has to be setted');
             }
-            $data .= str_pad(strlen($value), 3, '0', STR_PAD_LEFT) . $value;
+            $data .= str_pad(mb_strlen($value, 'UTF-8'), 3, '0', STR_PAD_LEFT) . $value;
         }
         return $data;
     }

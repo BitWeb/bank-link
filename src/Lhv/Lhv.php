@@ -54,7 +54,7 @@ final class Lhv extends BankLink
     protected function setSpecificParameters()
     {
         $this->addParameter(Constants::MAC, Constants::MAC_LENGTH);
-        $this->addParameter(Constants::CHARSET, Constants::CHARSET_LENGTH, $this->charset);
+        //$this->addParameter(Constants::CHARSET, Constants::CHARSET_LENGTH, $this->charset);
     }
 
     /**
@@ -221,4 +221,68 @@ final class Lhv extends BankLink
         $this->addMacParameter(Constants::RETURN_URL, Constants::RETURN_URL_LENGTH, $this->returnUrl);
     }
 
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3012.
+     */
+    protected function create4011() {
+        $datetime = new \DateTime();
+        $this->addCommonParameters(4011);
+        $this->addMacParameter(Constants::SND_ID, 15, $this->storeId);
+        $this->addMacParameter(Constants::REPLY, 4, '3012');
+        $this->addMacParameter(Constants::RETURN_URL, 255, $this->returnUrl);
+        $this->addMacParameter(Constants::DATETIME, Constants::DATETIME_LENGTH, $datetime->format(\DateTime::ISO8601));
+        $this->addMacParameter(Constants::RID, 30, '000000000000000000000000000000');
+    }
+
+    /*
+     * Kaupmehele edastatakse info kasutaja kohta ning paketi genereerimise kuupäev ja kellaaeg. Turvalisuse huvides peab
+     * kaupmees kontrollima paketis olevat saatmise aega (VK_DATETIME). Väli VK_USER_NAME sisaldab kasutaja nime kujul
+     * „perekonnanimi,eesnimi“ (näiteks: SAAR,JAAN).
+     */
+    protected function create3012() {
+        $this->addCommonParameters(3012);
+        $this->addMacParameter(Constants::USER, 16);
+        $this->addMacParameter(Constants::DATETIME, 24);
+        $this->addMacParameter(Constants::SND_ID, 15);
+        $this->addMacParameter(Constants::REC_ID, 15);
+        $this->addMacParameter(Constants::USER_NAME, 140);
+        $this->addMacParameter(Constants::USER_ID, 20);
+        $this->addMacParameter(Constants::COUNTRY, 2);
+        $this->addMacParameter(Constants::OTHER, 150);
+        $this->addMacParameter(Constants::TOKEN, 2);
+        $this->addMacParameter(Constants::RID, 30);
+    }
+
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3013.
+     */
+    protected function create4012() {
+        $this->addCommonParameters(4012);
+        $this->addMacParameter(Constants::SND_ID, 15, $this->storeId);
+        $this->addMacParameter(Constants::REC_ID, 15);
+        $this->addMacParameter(Constants::NONCE, 50, $this->generateNonce());
+        $this->addMacParameter(Constants::RETURN_URL, 255, $this->returnUrl);
+        $this->addMacParameter(Constants::DATETIME, 24);
+        $this->addMacParameter(Constants::RID, 30);
+    }
+
+    /*
+     * Kaupmehele edastatakse nonssi koopia.
+     */
+    protected function create3013() {
+        $this->addCommonParameters(3013);
+        $this->addMacParameter(Constants::USER, 16);
+        $this->addMacParameter(Constants::DATETIME, 24);
+        $this->addMacParameter(Constants::SND_ID, 15);
+        $this->addMacParameter(Constants::REC_ID, 15);
+        $this->addMacParameter(Constants::NONCE, 50);
+        $this->addMacParameter(Constants::USER_NAME, 140);
+        $this->addMacParameter(Constants::USER_ID, 20);
+        $this->addMacParameter(Constants::COUNTRY, 2);
+        $this->addMacParameter(Constants::OTHER, 150);
+        $this->addMacParameter(Constants::TOKEN, 2);
+        $this->addMacParameter(Constants::RID, 30);
+    }
 }

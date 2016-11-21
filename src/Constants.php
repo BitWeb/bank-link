@@ -184,4 +184,19 @@ abstract class Constants
     const RID = 'VK_RID';
     const RID_LENGTH = 30;
 
+    const USER_NAME = 'VK_USER_NAME';
+    const USER_NAME_LENGTH = 140;
+
+    const USER_ID = 'VK_USER_ID';
+    const USER_ID_LENGTH = 20;
+
+    const COUNTRY = 'VK_COUNTRY';
+    const COUNTRY_LENGTH = 2;
+
+    const OTHER = 'VK_OTHER';
+    const OTHER_LENGTH = 150;
+
+    const TOKEN = 'VK_TOKEN';
+    const TOKEN_LENGTH = 2;
+
 }
