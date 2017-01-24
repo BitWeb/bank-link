@@ -2,9 +2,9 @@
 namespace BitWeb\BankLink\Swedbank;
 
 use BitWeb\BankLink\BankLink;
-use BitWeb\BankLink\SwedBank\Constants;
+use BitWeb\BankLink\Swedbank\Constants;
 
-final class SwedBank extends BankLink
+final class Swedbank extends BankLink
 {
     /**
      * Bank URL
