@@ -76,7 +76,13 @@ abstract class BankLink
     protected $currency = 'EUR';
 
     /**
-     * Default communication language
+     * Sõnumi kodeering. UTF-8 (vaikeväärtus), ISO-8859-1 või WINDOWS-1257
+     * @var string
+     */
+    protected $encoding = 'UTF-8';
+
+    /**
+     * Soovitav suhtluskeel (EST, ENG või RUS)
      * @var string
      */
     protected $language = 'EST';
@@ -119,9 +125,21 @@ abstract class BankLink
 
     /**
      * Payment stamp
-     * @var integer
+     * @var string
      */
-    protected $stamp = 1;
+    protected $stamp = '1';
+
+    /**
+     * RID
+     * @var string
+     */
+    protected $rid = '';
+
+    /**
+     * RID
+     * @var \DateTime
+     */
+    protected $datetime = null;
 
     /**
      * Client name
@@ -176,12 +194,165 @@ abstract class BankLink
     /**
      * Constructor for seting private and public keys
      * @param string $privateKey Client private key
-     * @param string $certification Bank public key
+     * @param string $bankCertificate Bank public key
      */
-    public function __construct($privateKey = null, $certification = null)
+    public function __construct($privateKey = null, $bankCertificate = null)
     {
         $this->privateKey = $privateKey;
-        $this->certification = $certification;
+        $this->bankCertificte = $bankCertificate;
+    }
+
+    /**
+     * Generates uniq nonce value
+     * @return string Unique nonce
+     */
+    public static function generateNonce()
+    {
+        return sha1(uniqid(rand(), true));
+    }
+
+    /**
+     * Swedbank 22 or 11
+     * SEB 10
+     * Sampo 33
+     * Nordea 17
+     * Krediidipank 42
+     * Citadele Pank 12
+     * LHV Pank 77
+     * Bank DnB NORD 96
+     * Tallinna Äripank 93
+     * @param string $accountNumber
+     * @return string
+     */
+    public static function getBankNameByAccountNumber($accountNumber) {
+        $numbers = (int)substr($accountNumber, 0, 2);
+
+        switch ($numbers) {
+            case 22:
+            case 11:
+                return 'Swedbank';
+            case 10:
+                return 'SEB';
+            case 33:
+                return 'Danske';
+            case 17:
+                return 'Nordea';
+            case 42:
+                return 'Krediidipank';
+            case 16:
+                return 'Eesti Pank';
+            case 55:
+                return 'Versobank';
+            case 12:
+                return 'Citadele Pank';
+            case 77:
+                return 'LHV Pank';
+            case 83:
+                return 'Svenska Handelsbanken';
+            case 51:
+                return 'Pohjola Bank plc Eesti filiaal';
+            case 96:
+                return 'Bank DnB NORD';
+            case 93:
+                return 'Tallinna Äripank';
+            case 75:
+                return 'BIGBANK AS';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    public static function getBankNameByIban($iban) {
+        if ($iban == '' or $iban == null) {
+            return 'Unknown';
+        }
+        $numbers = (int)substr($iban, 4, 2);
+
+        switch ($numbers) {
+            case 22:
+                return 'Swedbank';
+            case 16:
+                return 'Eesti Pank';
+            case 10:
+                return 'SEB';
+            case 33:
+                return 'Danske';
+            case 17:
+                return 'Nordea';
+            case 12:
+                return 'Citadele Pank';
+            case 55:
+                return 'Versobank';
+            case 42:
+                return 'Krediidipank';
+            case 83:
+                return 'Svenska Handelsbanken';
+            case 51:
+                return 'Pohjola Bank plc Eesti filiaal';
+            case 77:
+                return 'LHV Pank';
+            case 75:
+                return 'BIGBANK';
+            case 96:
+                return 'DNB Pank';
+            case '00':
+                return 'Tallinna Äripank';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    public static function calculateRefNoChecksum($refNo) {
+        $refNo = (string)$refNo;
+        $weights = [7,3,1];
+        $sl = $st = strlen($refNo);
+        $total = 0;
+        while($sl > 0 and substr($refNo, --$sl, 1) >='0'){
+            $total += substr($refNo, ($st-1)-$sl, 1)* $weights[($sl%3)];
+        }
+        $checksum = ((ceil(($total/10))*10)-$total);
+        return $checksum;
+    }
+
+    public static function validateReferenceNumber($refNo) {
+        if(empty($refNo)) {
+            return false;
+        }
+        if (!preg_match('/^[0-9]+$/', $refNo)) {
+            return false;
+        }
+        if(strlen($refNo) > 20) {
+            return false;
+        }
+
+        $inputChecksum = $refNo[strlen($refNo) - 1];
+        $checksum = self::calculateRefNoChecksum(substr($refNo, 0, strlen($refNo) - 1));
+
+        if($inputChecksum != $checksum) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @link http://www.pangaliit.ee/et/arveldused/7-3-1meetod
+     *
+     * @param $nr
+     * @return string
+     */
+    public static function generateReferenceNumber($nr)
+    {
+        $nr = (string)$nr;
+        $kaal = array(7, 3, 1);
+        $sl = $st = strlen($nr);
+        $total = 0;
+        while ($sl > 0 and substr($nr, --$sl, 1) >= '0') {
+            $total += substr($nr, ($st - 1) - $sl, 1) * $kaal[($sl % 3)];
+        }
+        $kontrollnr = ((ceil(($total / 10)) * 10) - $total);
+
+        return $nr . $kontrollnr;
     }
 
     /**
@@ -232,6 +403,10 @@ abstract class BankLink
     public function getBankId()
     {
         return $this->bankId;
+    }
+
+    public function getService() {
+        return $this->parameters[Constants::SERVICE]->getValue();
     }
 
     /**
@@ -311,6 +486,26 @@ abstract class BankLink
     public function setCurrency($currency)
     {
         $this->currency = $currency;
+        return $this;
+    }
+
+    /**
+     * @param string $encoding
+     * @return BankLink object
+     */
+    public function setEncoding($encoding)
+    {
+        $this->encoding = $encoding;
+        return $this;
+    }
+
+    /**
+     * @param string $language
+     * @return BankLink object
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
         return $this;
     }
 
@@ -435,6 +630,16 @@ abstract class BankLink
         return $this;
     }
 
+    public function setRid($rid) {
+        $this->rid = $rid;
+        return $this;
+    }
+
+    public function setDatetime($datetime) {
+        $this->datetime = $datetime;
+        return $this;
+    }
+
     /**
      * Sets Client name
      * @param string $clientName Client name
@@ -490,7 +695,7 @@ abstract class BankLink
     /**
      * Sets bank specific parameters
      */
-    protected abstract function setSpecificParameters();
+    protected function setSpecificParameters() {}
 
     /**
      * Adds MAC parameter that is counted when MAC is beeing generated
@@ -541,15 +746,6 @@ abstract class BankLink
     {
         $this->orders = array();
         $this->isFailedDealing = $isFailedDealing;
-    }
-
-    /**
-     * Generates uniq nonce value
-     * @return string Unique nonce
-     */
-    protected function generateNonce()
-    {
-        return sha1(uniqid(rand(), true));
     }
 
     /**
@@ -641,118 +837,5 @@ abstract class BankLink
     protected function getMacParameters()
     {
         return $this->orders;
-    }
-
-    /**
-     * @link http://www.pangaliit.ee/et/arveldused/7-3-1meetod
-     *
-     * @param $nr
-     * @return string
-     */
-    public static function generateReferenceNumber($nr)
-    {
-        $nr = (string)$nr;
-        $kaal = array(7, 3, 1);
-        $sl = $st = strlen($nr);
-        $total = 0;
-        while ($sl > 0 and substr($nr, --$sl, 1) >= '0') {
-            $total += substr($nr, ($st - 1) - $sl, 1) * $kaal[($sl % 3)];
-        }
-        $kontrollnr = ((ceil(($total / 10)) * 10) - $total);
-
-        return $nr . $kontrollnr;
-    }
-
-    /**
-     * Swedbank 22 or 11
-     * SEB 10
-     * Sampo 33
-     * Nordea 17
-     * Krediidipank 42
-     * Citadele Pank 12
-     * LHV Pank 77
-     * Bank DnB NORD 96
-     * Tallinna Äripank 93
-     * @param string $accountNumber
-     * @return string
-     */
-    public static function getBankNameByAccountNumber($accountNumber)
-    {
-        $numbers = (int)substr($accountNumber, 0, 2);
-
-        switch ($numbers) {
-            case 22:
-            case 11:
-                return 'Swedbank';
-            case 10:
-                return 'SEB';
-            case 33:
-                return 'Danske';
-            case 17:
-                return 'Nordea';
-            case 42:
-                return 'Krediidipank';
-            case 16:
-                return 'Eesti Pank';
-            case 55:
-                return 'Versobank';
-            case 12:
-                return 'Citadele Pank';
-            case 77:
-                return 'LHV Pank';
-            case 83:
-                return 'Svenska Handelsbanken';
-            case 51:
-                return 'Pohjola Bank plc Eesti filiaal';
-            case 96:
-                return 'Bank DnB NORD';
-            case 93:
-                return 'Tallinna Äripank';
-            case 75:
-                return 'BIGBANK AS';
-            default:
-                return 'Unknown';
-        }
-    }
-
-    public static function getBankNameByIban($iban)
-    {
-        if ($iban == '' or $iban == null) {
-            return 'Unknown';
-        }
-        $numbers = (int)substr($iban, 4, 2);
-
-        switch ($numbers) {
-            case 22:
-                return 'Swedbank';
-            case 16:
-                return 'Eesti Pank';
-            case 10:
-                return 'SEB';
-            case 33:
-                return 'Danske';
-            case 17:
-                return 'Nordea';
-            case 12:
-                return 'Citadele Pank';
-            case 55:
-                return 'Versobank';
-            case 42:
-                return 'Krediidipank';
-            case 83:
-                return 'Svenska Handelsbanken';
-            case 51:
-                return 'Pohjola Bank plc Eesti filiaal';
-            case 77:
-                return 'LHV Pank';
-            case 75:
-                return 'BIGBANK';
-            case 96:
-                return 'DNB Pank';
-            case '00':
-                return 'Tallinna Äripank';
-            default:
-                return 'Unknown';
-        }
     }
 }

@@ -1,21 +1,8 @@
 <?php
-
 namespace BitWeb\BankLink;
 
-/**
- * Class holds information about fields that are sent to bank and received from bank
- *
- * @author Tõnis Tobre <tobre@bitweb.ee>
- * @copyright Copyright (C) 2009. All rights reserved. Tõnis Tobre
- *
- * Change Log:
- * Date            User        Comment
- * ---------------------------------
- * Mar 25, 2009    tobre    Initial version
- */
 abstract class Constants
 {
-
     /**
      * Teenuse number
      */
@@ -38,7 +25,7 @@ abstract class Constants
      * Maksmisele kuuluv summa
      */
     const AMOUNT = 'VK_AMOUNT';
-    const AMOUNT_LENGTH = 17;
+    const AMOUNT_LENGTH = 12;
 
     /**
      * Valuuta nimi
@@ -50,13 +37,13 @@ abstract class Constants
      * Saaja konto number
      */
     const ACC = 'VK_ACC';
-    const ACC_LENGTH = 16;
+    const ACC_LENGTH = 34;
 
     /**
      * Maksekorralduse viitenumber
      */
     const REF = 'VK_REF';
-    const REF_LENGTH = 20;
+    const REF_LENGTH = 35;
 
     /**
      * Soovitav suhtluskeel
@@ -68,19 +55,19 @@ abstract class Constants
      * Maksekorralduse number
      */
     const T_NO = 'VK_T_NO';
-    const T_NO_LENGTH = 6;
+    const T_NO_LENGTH = 20;
 
     /**
      * Saaja konto number
      */
     const REC_ACC = 'VK_REC_ACC';
-    const REC_ACC_LENGTH = 16;
+    const REC_ACC_LENGTH = 34;
 
     /**
      * Maksja konto number
      */
     const SND_ACC = 'VK_SND_ACC';
-    const SND_ACC_LENGTH = 16;
+    const SND_ACC_LENGTH = 34;
 
     /**
      * Maksekorralduse kuupäev
@@ -169,7 +156,7 @@ abstract class Constants
      * URL, kuhu vastatakse ebaõnnestunud tehingu puhul
      */
     const CANCEL_URL = 'VK_CANCEL';
-    const CANCEL_URL_LENGTH = 60;
+    const CANCEL_URL_LENGTH = 255;
 
     /**
      *
@@ -181,6 +168,9 @@ abstract class Constants
     const DATETIME = 'VK_DATETIME';
     const DATETIME_LENGTH = 24;
 
+    const T_DATETIME = 'VK_T_DATETIME';
+    const T_DATETIME_LENGTH = 24;
+
     const RID = 'VK_RID';
     const RID_LENGTH = 30;
 
@@ -190,13 +180,30 @@ abstract class Constants
     const USER_ID = 'VK_USER_ID';
     const USER_ID_LENGTH = 20;
 
+    /*
+     * Isikukoodi riik (kahetäheline kood vastavalt ISO 3166-1 standardile)
+     */
     const COUNTRY = 'VK_COUNTRY';
     const COUNTRY_LENGTH = 2;
 
     const OTHER = 'VK_OTHER';
     const OTHER_LENGTH = 150;
 
+    /*
+     * Autentimisvahendi identifikaatori kood:
+     * 1- ID-kaart;
+     * 2- Mobiil-ID;
+     * 5- ühekordsed koodid v.a. PIN-kalkulaator (Swedbank hetkel ühekordseid paroole ei kasuta);
+     * 6- PIN-kalkulaator;
+     * 7- korduvkasutusega kaart
+     */
     const TOKEN = 'VK_TOKEN';
     const TOKEN_LENGTH = 2;
+
+    /*
+     * Sõnumi kodeering. UTF-8 (vaikeväärtus), ISO-8859-1 või WINDOWS-1257
+     */
+    const ENCODING = 'VK_ENCODING';
+    const ENCODING_LENGTH = 12;
 
 }

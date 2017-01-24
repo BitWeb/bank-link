@@ -4,47 +4,47 @@ namespace BitWeb\BankLink\Lhv;
 
 use BitWeb\BankLink;
 
-/**
- * SEB bank specific constants
- *
- * @author Tõnis Tobre <tobre@webmedia.ee>
- * @copyright Copyright (C) 2009. All rights reserved. Tõnis Tobre
- *
- * Change Log:
- * Date            User        Comment
- * ---------------------------------
- * Mar 25, 2009    tobre    Initial version
- */
 abstract class Constants extends BankLink\Constants
 {
+    const BANK_ID = 'LHV';
 
     const SND_ID_LENGTH = 15;
 
+    const REC_ID_LENGTH = 15;
+
+    const STAMP_LENGTH = 20;
+
+    const T_NO_LENGTH = 20;
+
+    const AMOUNT_LENGTH = 12;
+
+    const REC_ACC_LENGTH = 34;
+
+    const REC_NAME_LENGTH = 70;
+
+    const SND_ACC_LENGTH = 34;
+
+    const SND_NAME_LENGTH = 70;
+
     const NAME_LENGTH = 70;
 
-    const REC_NAME_LENGTH = 100;
+    const REF_LENGTH = 35;
 
-    const SND_NAME_LENGTH = 100;
+    const MSG_LENGTH = 95;
 
-    /**
-     * Maksekorralduse selgitus
-     */
-    const ERROR_CODE = 'VK_ERROR_CODE';
-    const ERROR_CODE_LENGTH = 4;
+    const RETURN_URL_LENGTH = 255;
 
-    /**
-     * Sõnumi kodeering. Mittekohustuslik parameeter. Lubatud ISO-8859-1(vaikeväärtus) või UTF-8
-     */
-    const CHARSET = 'VK_CHARSET';
-    const CHARSET_LENGTH = 12;
+    const CANCEL_URL_LENGTH = 255;
 
-    const RETURN_URL_LENGTH = 60;
-
-    const MSG_LENGTH = 210;
+    const RID_LENGTH = 30;
 
     const MAC_LENGTH = 700;
 
-    const REC_ID_LENGTH = 15;
+    const USER_LENGTH = 16;
 
-    const BANK_ID = 'LHV';
+    const USER_NAME_LENGTH = 140;
+
+    const USER_ID_LENGTH = 20;
+
+    const OTHER_LENGTH = 150;
 }
