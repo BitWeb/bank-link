@@ -21,8 +21,8 @@ final class Seb extends BankLink
     protected function setSpecificParameters()
     {
         $this->addParameter(Constants::MAC, Constants::MAC_LENGTH);
-        $this->addParameter(Constants::ENCODING, Constants::ENCODING_LENGTH, $this->encoding);
-        $this->addParameter(Constants::LANG, Constants::LANG_LENGTH, $this->language);
+        //$this->addParameter(Constants::ENCODING, Constants::ENCODING_LENGTH, $this->encoding);
+        //$this->addParameter(Constants::LANG, Constants::LANG_LENGTH, $this->language);
     }
 
     /**
@@ -109,7 +109,6 @@ final class Seb extends BankLink
         $this->addMacParameter(Constants::STAMP, Constants::STAMP_LENGTH);
         $this->addMacParameter(Constants::REF, Constants::REF_LENGTH);
         $this->addMacParameter(Constants::MSG, Constants::MSG_LENGTH);
-        $this->addMacParameter(Constants::T_DATETIME, Constants::T_DATETIME_LENGTH);
         $this->addParameter(Constants::LANG, Constants::LANG_LENGTH);
         $this->addParameter(Constants::AUTO, Constants::AUTO_LENGTH);
     }
