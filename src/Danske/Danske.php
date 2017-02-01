@@ -31,7 +31,7 @@ final class Danske extends BankLink
         $this->addCommonParameters('1011');
         $this->addMacParameter(Constants::SND_ID, Constants::SND_ID_LENGTH, $this->storeId);
         $this->addMacParameter(Constants::STAMP, Constants::STAMP_LENGTH, $this->stamp);
-        $this->addMacParameter(Constants::AMOUNT, Constants::AMOUNT_LENGTH, $this->amount);
+        $this->addMacParameter(Constants::AMOUNT, Constants::AMOUNT_LENGTH, number_format($this->amount, 2, '.', ''));
         $this->addMacParameter(Constants::CURR, Constants::CURR_LENGTH, $this->currency);
         $this->addMacParameter(Constants::ACC, Constants::ACC_LENGTH, $this->accountNumber);
         $this->addMacParameter(Constants::NAME, Constants::NAME_LENGTH, $this->clientName);
@@ -56,7 +56,7 @@ final class Danske extends BankLink
         $this->addCommonParameters('1012');
         $this->addMacParameter(Constants::SND_ID, Constants::SND_ID_LENGTH, $this->storeId);
         $this->addMacParameter(Constants::STAMP, Constants::STAMP_LENGTH, $this->stamp);
-        $this->addMacParameter(Constants::AMOUNT, Constants::AMOUNT_LENGTH, $this->amount);
+        $this->addMacParameter(Constants::AMOUNT, Constants::AMOUNT_LENGTH, number_format($this->amount, 2, '.', ''));
         $this->addMacParameter(Constants::CURR, Constants::CURR_LENGTH, $this->currency);
         $this->addMacParameter(Constants::REF, Constants::REF_LENGTH, $this->referenceNumber);
         $this->addMacParameter(Constants::MSG, Constants::MSG_LENGTH, $this->message);
