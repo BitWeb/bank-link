@@ -803,7 +803,6 @@ abstract class BankLink
             }
             $data .= str_pad(mb_strlen($value, 'UTF-8'), 3, '0', STR_PAD_LEFT) . $value;
         }
-        var_dump($data);exit;
         return $data;
     }
 
