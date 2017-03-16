@@ -10,7 +10,7 @@ final class Swedbank extends BankLink
      * Bank URL
      * @var string
      */
-    protected $url = 'https://www.swedbank.ee/banklink ';
+    protected $url = 'https://www.swedbank.ee/banklink';
 
     /**
      * BankId
