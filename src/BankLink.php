@@ -451,12 +451,11 @@ abstract class BankLink
     }
 
     /**
-     * Creates request and response methods for communicating bank
-     * @param integer $service Service that is used for current action
+     * Prepares request parameters for MAC calculation
+     * @param string $service Service that is used for current action
      * @throws Exception when there are no such method
      */
-    public function create($service)
-    {
+    public function prepareService($service) {
         $method = 'create' . $service;
         if (!method_exists($this, $method)) {
             throw new Exception('No such method "' . $method . '"');
@@ -466,12 +465,26 @@ abstract class BankLink
     }
 
     /**
+     * Creates request and response methods for communicating bank
+     * @param integer $service Service that is used for current action
+     * @throws Exception when there are no such method
+     */
+    public function create($service)
+    {
+        $this->prepareService($service);
+
+        $this->calculateMac();
+    }
+
+    /**
      * Gets right response method and load right values request
      */
-    public function loadFromReturnRequest()
+    public function createFromReturnRequest()
     {
         $this->loadParameters($_REQUEST);
-        $this->create($this->parameters[Constants::SERVICE]->getValue());
+        $this->prepareService($this->parameters[Constants::SERVICE]->getValue());
+
+        $this->verifyMac();
     }
 
     /**

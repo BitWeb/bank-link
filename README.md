@@ -1,11 +1,11 @@
 bank-link
 =========
-Banklink and bank related classes.
+Classes for handling Banklink MAC consturction and verification.
 
-Usage
-=====
+Usage examples
+==============
 
-## Request construction
+## Banklink request construction example
 ~~~~
 $sebTestUrl = 'https://www.seb.ee/cgi-bin/dv.sh/ipank.r';
 
@@ -50,9 +50,8 @@ try {
     $link->setAmount($amount);
     $link->setReferenceNumber($referenceNo);
     $link->setMessage($msg);
-                
+    
     $link->create('1012');
-    $link->calculateMac();
     
     echo $link->getForm();
     
@@ -62,7 +61,7 @@ try {
 }
 ~~~~
 
-## Bank's return request handling
+## Bank link return request handling example
 ~~~~
 $sebTestBankCertPem = '-----BEGIN CERTIFICATE-----
 MIIDRTCCAq6gAwIBAgIBADANBgkqhkiG9w0BAQQFADB7MQswCQYDVQQGEwJFRTEO
@@ -94,9 +93,7 @@ try {
     $link = new \BitWeb\BankLink\Seb\Seb();
     $link->setBankCertificate($bankCertPem);
     
-    $link->loadFromReturnRequest();
-    
-    $link->verifyMac();
+    $link->createFromReturnRequest();
     
     switch ($link->getService()) {
         case '3012':
@@ -135,9 +132,9 @@ try {
                 
             } else {
                 /**
-                 * Same request can also be duplicated by the bank with VK_AUTO = 'Y'
-                 * in case the user didn't click the "Return to merchant" button in the bank.
-                 * We should respond with status 200. Some banks will continue resending automated return requests otherwise.
+                 * Same return request may be sent several times by the bank with VK_AUTO = 'Y'
+                 * For example in case the user didn't click the "Return to merchant" button in the bank.
+                 * We should respond with status 200. Some banks will continue resending automatic return requests otherwise.
                  */
                 
                 die('OK');
@@ -155,8 +152,8 @@ try {
                 
             } else {
                 /**
-                 * Same request can also be duplicated by the bank with VK_AUTO = 'Y'
-                 * in case the user didn't click the "Return to merchant" button in the bank.
+                 * Same return request may be sent several times by the bank with VK_AUTO = 'Y'
+                 * For example in case the user didn't click the "Return to merchant" button in the bank.
                  * We should respond with status 200. Some banks will continue resending automatic return requests otherwise.
                  */
                 
