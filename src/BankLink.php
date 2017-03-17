@@ -2,75 +2,22 @@
 
 namespace BitWeb\BankLink;
 
-/**
- * Main BankLink class that represents actions for bank links
- *
- *<code>
- *try {
- *
- *    $link = new SEBLink('/home/tobre/www/pangalink/horizon/key_seb.pem', '/home/tobre/www/pangalink/horizon/eypcert.pem');
- *    //$link = new SwedBankLink('/home/tobre/www/pangalink/horizon/privkey.pem', '/home/tobre/www/pangalink/horizon/IpizzaHPavalikvoti.pem');
- *    if ($link->isRequest()) {
- *        if (isset($_GET['doBank'])) {
- *            $link->setAccountNumber('10000004089017');
- *            $link->setAmount($_GET['amount']);
- *            $link->setMessage('BitWeb test');
- *            $link->setReferenceNumber('643519');
- *            if ($link->getBankId() == 'EYP') {
- *                $link->setStoreId('horizontr');
- *            } else {
- *                $link->setStoreId('HORIZON');
- *            }
- *            $link->setReturnUrl('http://localhost/pangalink/sources/BankLink/?r=1');
- *            $link->create(1002);
- *            echo $link->getForm();
- *        } else {
- *            ?>
- *            <a href="?doBank&amount=0.01">Tee makse</a>
- *            <?php
- *        }
- *
- *    } else {
- *        if ($link->isAccepted($link->getResponse())) {
- *            echo 'accepted';
- *            //echo $link->getValue(SEBLinkConstants::SND_NAME);
- *            print_r($link);
- *
- *        } else {
- *            echo 'ei aksepteeritud';
- *        }
- *    }
- *} catch(Exception $e) {
- *    print_r($link);
- *    print_r($e);
- *}
- *</code>
- *
- * @author Tõnis Tobre <tobre@bitweb.ee>
- * @copyright Copyright (C) 2009. All rights reserved. Tõnis Tobre
- *
- * Change Log:
- * Date            User        Comment
- * ---------------------------------
- * Mar 24, 2009    tobre    Initial version
- */
 abstract class BankLink
 {
-
     /**
-     * Bank url
+     * Banklink url
      * @var string
      */
     protected $url;
 
     /**
-     * MAC version. Default is 008
+     * MAC version. Always '008'
      * @var string
      */
     protected $version = '008';
 
     /**
-     * Currency
+     * Valuuta. Always 'EUR'
      * @var string
      */
     protected $currency = 'EUR';
@@ -82,7 +29,7 @@ abstract class BankLink
     protected $encoding = 'UTF-8';
 
     /**
-     * Soovitav suhtluskeel (EST, ENG või RUS)
+     * Soovitud kasutajaliidese keel (EST, ENG või RUS)
      * @var string
      */
     protected $language = 'EST';
@@ -100,13 +47,13 @@ abstract class BankLink
     protected $accountNumber;
 
     /**
-     * Client reference number
+     * Reference number
      * @var string
      */
     protected $referenceNumber;
 
     /**
-     * Payment message
+     * Selgitus
      * @var $message
      */
     protected $message;
@@ -118,7 +65,7 @@ abstract class BankLink
     protected $amount;
 
     /**
-     * URL where to come back from bank
+     * URL where user is redirected after payment
      * @var string
      */
     protected $returnUrl;
@@ -130,13 +77,11 @@ abstract class BankLink
     protected $stamp = '1';
 
     /**
-     * RID
      * @var string
      */
     protected $rid = '';
 
     /**
-     * RID
      * @var \DateTime
      */
     protected $datetime = null;
@@ -146,7 +91,6 @@ abstract class BankLink
      * @var string
      */
     protected $clientName;
-
 
     /**
      * Bank id
@@ -173,23 +117,16 @@ abstract class BankLink
     private $passPhrase;
 
     /**
-     * Method parameters array
+     * Service parameters
      * @var array
      */
-    protected $parameters = array();
+    private $parameters = array();
 
     /**
-     * Field names and ordering for generating MAC
+     * Serivce parameters included in MAC calculation
      * @var array
      */
-    private $orders = array();
-
-    /**
-     *  Holds info for methods that represents bank not accepting payment
-     * @var boolean
-     */
-    private $isFailedDealing = false;
-
+    private $macParameters = array();
 
     /**
      * Constructor for seting private and public keys
@@ -355,6 +292,10 @@ abstract class BankLink
         return $nr . $kontrollnr;
     }
 
+    protected static function getParameterLength($fieldName) {
+        return constant(Constants::class.'::'.$fieldName.'_LENGTH');
+    }
+
     /**
      * Setting bank request parameter
      * @param string $field Parameter field field name
@@ -512,7 +453,6 @@ abstract class BankLink
     /**
      * Creates request and response methods for communicating bank
      * @param integer $service Service that is used for current action
-     * @return boolean true if dealing has been cancelled false otherwise
      * @throws Exception when there are no such method
      */
     public function create($service)
@@ -523,23 +463,15 @@ abstract class BankLink
         }
 
         $this->$method();
-        if ($this->isResponse()) {
-            $this->verifyMac();
-        } else {
-            $this->calculateMac();
-        }
-
-        return $this->isFailedDealing;
     }
 
     /**
-     * Gets right response method and load right values from request
-     * @return boolean create() return value
+     * Gets right response method and load right values request
      */
-    public function getResponse()
+    public function loadFromReturnRequest()
     {
-        $this->loadValues();
-        return $this->create($this->parameters[Constants::SERVICE]->getValue());
+        $this->loadParameters($_REQUEST);
+        $this->create($this->parameters[Constants::SERVICE]->getValue());
     }
 
     /**
@@ -549,7 +481,6 @@ abstract class BankLink
      */
     public function isAccepted($response)
     {
-
         return !$response;
     }
 
@@ -664,50 +595,26 @@ abstract class BankLink
         return $fields;
     }
 
-    /**
-     * Checks if query is request
-     * @return true if query is request, false otherwise
-     */
-    final public function isRequest()
-    {
-        return !$this->isResponse();
-    }
-
-    /**
-     * Checks if query is response
-     * @return true if query is response, false otherwise
-     */
-    public function isResponse()
-    {
-        return isset($_REQUEST[Constants::SERVICE]);
-    }
-
     final public function getForm()
     {
         $formHTML = '<html><body>';
         $formHTML .= '<form id="bankForm" method="POST" action="' . $this->url . '">' . PHP_EOL;
-        $formHTML .= $this->drawFields();
+        $formHTML .= $this->renderFields();
         $formHTML .= '</form>';
         $formHTML .= '<script type="text/javascript">document.getElementById("bankForm").submit();</script></body></html>';
         return $formHTML;
     }
 
     /**
-     * Sets bank specific parameters
-     */
-    protected function setSpecificParameters() {}
-
-    /**
-     * Adds MAC parameter that is counted when MAC is beeing generated
+     * Adds parameter that is included in MAC calculation
      * @param string $field Parameter field
-     * @param string $length Parameter length
      * @param $defaultValue Parameter default value
      * @see BankLink#addParameter()
      */
-    final protected function addMacParameter($field, $length, $defaultValue = null)
+    final protected function addMacParameter($field, $defaultValue = null)
     {
-        $this->orders[] = $field;
-        $this->addParameter($field, $length, $defaultValue);
+        $this->macParameters[] = $field;
+        $this->addParameter($field, $defaultValue);
     }
 
     /**
@@ -716,36 +623,26 @@ abstract class BankLink
      * @param string $length Parameter length
      * @param string $defaultValue Parameter default value
      */
-    final protected function addParameter($field, $length, $defaultValue = null)
+    final protected function addParameter($field, $defaultValue = null)
     {
         if (isset($this->parameters[$field]) && $this->parameters[$field] instanceof Parameter) {
-            $this->parameters[$field]->setLength($length);
+            $this->parameters[$field]->setLength(self::getParameterLength($field));
         } else {
-            $this->parameters[$field] = new Parameter($field, $defaultValue, $length);
+            $this->parameters[$field] = new Parameter($field, $defaultValue, self::getParameterLength($field));
         }
     }
 
     /**
      * Adds common parameters that is common for all service methods
-     * @param integer $service Method number
-     * @param boolean $isFailedDealing Sets true if this method is failing method
+     * @param string $service Method number
      */
-    protected function addCommonParameters($service, $isFailedDealing = false)
+    protected function addCommonParameters($service)
     {
-        $this->setServiceMetadata($isFailedDealing);
-        $this->addMacParameter(Constants::SERVICE, Constants::SERVICE_LENGTH, $service);
-        $this->addMacParameter(Constants::VERSION, Constants::VERSION_LENGTH, $this->version);
-        $this->setSpecificParameters();
-    }
-
-    /**
-     * Sets service metadata.
-     * @param boolean $isFailedDealing
-     */
-    final protected function setServiceMetadata($isFailedDealing = false)
-    {
-        $this->orders = array();
-        $this->isFailedDealing = $isFailedDealing;
+        $this->addMacParameter(Constants::SERVICE, $service);
+        $this->addMacParameter(Constants::VERSION, $this->version);
+        $this->addParameter(Constants::MAC);
+        $this->addParameter(Constants::ENCODING, $this->encoding);
+        $this->addParameter(Constants::LANG, $this->language);
     }
 
     /**
@@ -796,10 +693,10 @@ abstract class BankLink
     private function getMacSource()
     {
         $data = '';
-        foreach ($this->orders as $order) {
-            $value = $this->parameters[$order]->getFormattedValue();
+        foreach ($this->macParameters as $macParameter) {
+            $value = $this->parameters[$macParameter]->getFormattedValue();
             if (null === $value) {
-                throw new Exception('"' . $order . '" has to be setted');
+                throw new Exception('"' . $macParameter . '" has to be setted');
             }
             $data .= str_pad(mb_strlen($value, 'UTF-8'), 3, '0', STR_PAD_LEFT) . $value;
         }
@@ -811,7 +708,7 @@ abstract class BankLink
      * @param array $data Where to load values. Default is $_REQUEST
      * @see BankLink#setParameter()
      */
-    protected function loadValues(array $data = null)
+    public function loadParameters(array $data = null)
     {
         if (null === $data) {
             $data = $_REQUEST;
@@ -822,10 +719,10 @@ abstract class BankLink
     }
 
     /**
-     * Draws neccessary form hidden fields
+     * Renders neccessary fields for the hidden redirect form
      * @return string Fields HTML code
      */
-    private function drawFields()
+    private function renderFields()
     {
         $fieldsHTML = '';
         foreach ($this->getFields() as $field => $value) {
@@ -836,6 +733,167 @@ abstract class BankLink
 
     protected function getMacParameters()
     {
-        return $this->orders;
+        return $this->macParameters;
+    }
+
+    /**
+     * Teenus 1011
+     * Kaupmees saadab panka allkirjastatud maksekorralduse andmed, mida klient internetipangas muuta ei saa.
+     * Pärast edukat makset koostatakse kaupmehele päring “1111”, ebaõnnestunud makse puhul “1911”
+     */
+    protected function create1011()
+    {
+        $this->addCommonParameters('1011');
+        $this->addMacParameter(Constants::SND_ID       ,$this->storeId);
+        $this->addMacParameter(Constants::STAMP        ,$this->stamp);
+        $this->addMacParameter(Constants::AMOUNT       ,number_format($this->amount, 2, '.', ''));
+        $this->addMacParameter(Constants::CURR         ,$this->currency);
+        $this->addMacParameter(Constants::ACC          ,$this->accountNumber);
+        $this->addMacParameter(Constants::NAME         ,$this->clientName);
+        $this->addMacParameter(Constants::REF          ,$this->referenceNumber);
+        $this->addMacParameter(Constants::MSG          ,$this->message);
+        $this->addMacParameter(Constants::RETURN_URL   ,$this->returnUrl);
+        $this->addMacParameter(Constants::CANCEL_URL   ,$this->returnUrl);
+        if($this->datetime && $this->datetime instanceof \DateTime) {
+            $this->addMacParameter(Constants::DATETIME, $this->datetime->format(\DateTime::ISO8601));
+        } else {
+            $this->addMacParameter(Constants::DATETIME, '');
+        }
+    }
+
+    /**
+     * Teenus 1012
+     * Kaupmees saadab panka allkirjastatud maksekorralduse andmed, mida klient internetipangas muuta ei saa.
+     * Pärast edukat makset koostatakse kaupmehele päring “1111”, ebaõnnestunud makse puhul “1911”
+     */
+    protected function create1012()
+    {
+        $this->addCommonParameters('1012');
+        $this->addMacParameter(Constants::SND_ID        ,$this->storeId);
+        $this->addMacParameter(Constants::STAMP         ,$this->stamp);
+        $this->addMacParameter(Constants::AMOUNT        ,number_format($this->amount, 2, '.', ''));
+        $this->addMacParameter(Constants::CURR          ,$this->currency);
+        $this->addMacParameter(Constants::REF           ,$this->referenceNumber);
+        $this->addMacParameter(Constants::MSG           ,$this->message);
+        $this->addMacParameter(Constants::RETURN_URL    ,$this->returnUrl);
+        $this->addMacParameter(Constants::CANCEL_URL    ,$this->returnUrl);
+        if($this->datetime && $this->datetime instanceof \DateTime) {
+            $this->addMacParameter(Constants::DATETIME, $this->datetime->format(\DateTime::ISO8601));
+        } else {
+            $this->addMacParameter(Constants::DATETIME, '');
+        }
+    }
+
+    /**
+     * Teenus 1111
+     * Vastus Tehingu aktsepteerimise kohta
+     */
+    protected function create1111()
+    {
+        $this->addCommonParameters('1111');
+        $this->addMacParameter(Constants::SND_ID);
+        $this->addMacParameter(Constants::REC_ID);
+        $this->addMacParameter(Constants::STAMP);
+        $this->addMacParameter(Constants::T_NO);
+        $this->addMacParameter(Constants::AMOUNT);
+        $this->addMacParameter(Constants::CURR);
+        $this->addMacParameter(Constants::REC_ACC);
+        $this->addMacParameter(Constants::REC_NAME);
+        $this->addMacParameter(Constants::SND_ACC);
+        $this->addMacParameter(Constants::SND_NAME);
+        $this->addMacParameter(Constants::REF);
+        $this->addMacParameter(Constants::MSG);
+        $this->addMacParameter(Constants::T_DATETIME);
+        $this->addParameter(Constants::LANG);
+        $this->addParameter(Constants::AUTO);
+    }
+
+    /**
+     * Teenus 1911
+     * Kasutatakse ebaõnnestunud tehingust teatamiseks.
+     */
+    protected function create1911()
+    {
+        $this->addCommonParameters('1911');
+        $this->addMacParameter(Constants::SND_ID);
+        $this->addMacParameter(Constants::REC_ID);
+        $this->addMacParameter(Constants::STAMP);
+        $this->addMacParameter(Constants::REF);
+        $this->addMacParameter(Constants::MSG);
+        $this->addParameter(Constants::LANG);
+        $this->addParameter(Constants::AUTO);
+    }
+
+
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3012.
+     */
+    protected function create4011() {
+        $this->addCommonParameters('4011');
+        $this->addMacParameter(Constants::SND_ID, $this->storeId);
+        $this->addMacParameter(Constants::REPLY, '3012');
+        $this->addMacParameter(Constants::RETURN_URL, $this->returnUrl);
+        if($this->datetime && $this->datetime instanceof \DateTime) {
+            $this->addMacParameter(Constants::DATETIME, $this->datetime->format(\DateTime::ISO8601));
+        } else {
+            $this->addMacParameter(Constants::DATETIME, '');
+        }
+        $this->addMacParameter(Constants::RID, '');
+    }
+
+    /*
+     * Kaupmehele edastatakse info kasutaja kohta ning paketi genereerimise kuupäev ja kellaaeg. Turvalisuse huvides peab
+     * kaupmees kontrollima paketis olevat saatmise aega (VK_DATETIME). Väli VK_USER_NAME sisaldab kasutaja nime kujul
+     * „perekonnanimi,eesnimi“ (näiteks: SAAR,JAAN).
+     */
+    protected function create3012() {
+        $this->addCommonParameters('3012');
+        $this->addMacParameter(Constants::USER);
+        $this->addMacParameter(Constants::DATETIME);
+        $this->addMacParameter(Constants::SND_ID);
+        $this->addMacParameter(Constants::REC_ID);
+        $this->addMacParameter(Constants::USER_NAME);
+        $this->addMacParameter(Constants::USER_ID);
+        $this->addMacParameter(Constants::COUNTRY);
+        $this->addMacParameter(Constants::OTHER);
+        $this->addMacParameter(Constants::TOKEN);
+        $this->addMacParameter(Constants::RID);
+    }
+
+    /*
+     * Kaupmehe poolt saadetav pakett kasutaja tuvastamiseks. Teenus avatud vastava lepingu sõlminud kaupmeestele.
+     * Vastuspaketi kood 3013.
+     */
+    protected function create4012() {
+        $this->addCommonParameters('4012');
+        $this->addMacParameter(Constants::SND_ID, $this->storeId);
+        $this->addMacParameter(Constants::REC_ID);
+        $this->addMacParameter(Constants::NONCE, self::generateNonce());
+        $this->addMacParameter(Constants::RETURN_URL, $this->returnUrl);
+        if($this->datetime && $this->datetime instanceof \DateTime) {
+            $this->addMacParameter(Constants::DATETIME, $this->datetime->format(\DateTime::ISO8601));
+        } else {
+            $this->addMacParameter(Constants::DATETIME, '');
+        }
+        $this->addMacParameter(Constants::RID, '');
+    }
+
+    /*
+     * Kaupmehele edastatakse nonssi koopia.
+     */
+    protected function create3013() {
+        $this->addCommonParameters('3013');
+        $this->addMacParameter(Constants::USER);
+        $this->addMacParameter(Constants::DATETIME);
+        $this->addMacParameter(Constants::SND_ID);
+        $this->addMacParameter(Constants::REC_ID);
+        $this->addMacParameter(Constants::NONCE);
+        $this->addMacParameter(Constants::USER_NAME);
+        $this->addMacParameter(Constants::USER_ID);
+        $this->addMacParameter(Constants::COUNTRY);
+        $this->addMacParameter(Constants::OTHER);
+        $this->addMacParameter(Constants::TOKEN);
+        $this->addMacParameter(Constants::RID);
     }
 }

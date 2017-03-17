@@ -2,17 +2,6 @@
 
 namespace BitWeb\BankLink;
 
-/**
- *
- *
- * @author Tõnis Tobre <tobre@bitweb.ee>
- * @copyright Copyright (C) 2009. All rights reserved. Tõnis Tobre
- *
- * Change Log:
- * Date            User        Comment
- * ---------------------------------
- * Mar 25, 2009    tobre    Initial version
- */
 final class Parameter
 {
 
@@ -52,10 +41,7 @@ final class Parameter
 
     public function getFormattedValue()
     {
-        if (strstr($this->value, 'õ') || strstr($this->value, 'Ü')) {
-            return (string)trim(substr($this->value, 0, $this->length - 1));
-        }
-        return (string)trim(substr($this->value, 0, $this->length));
+        return mb_substr($this->value, 0, $this->length);
     }
 
     public function getValue()
