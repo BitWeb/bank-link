@@ -87,6 +87,7 @@ C82uR/wUZJDw9kj+R1O46/byG8yA+S9FVw==
 ';
 
 try {
+    $timeNow = new \DateTime();
 
     $bankCertPem = $sebTestBankCertPem;
 
@@ -99,9 +100,17 @@ try {
     
     switch ($link->getService()) {
         case '3012':
+            //Return result for authentication service 4011
             
             break;
         case '3013':
+            //Return result for authentication service 4012
+            
+            $messageDatetime = $link->getValue(\BitWeb\BankLink\Constants::DATETIME);
+            $messageDatetime = \DateTime::createFromFormat(\DateTime::ISO8601, $messageDatetime);
+            $diff = $timeNow->getTimestamp() - $messageDatetime->getTimestamp();
+            if($diff > 300) throw new Exception('Authentication return request expired.');
+            
             $userCountryCode = $link->getValue(\BitWeb\BankLink\Constants::COUNTRY);
             $userName = $link->getValue(\BitWeb\BankLink\Constants::USER_NAME);
             $userPersonalId = $link->getValue(\BitWeb\BankLink\Constants::USER_ID);
@@ -127,8 +136,8 @@ try {
             } else {
                 /**
                  * Same request can also be duplicated by the bank with VK_AUTO = 'Y'
-                 * in case the user didn't click the "Return to merchant" button on bank's site.
-                 * We should respond with status 200. Some banks will continue sending automated return requests otherwise.
+                 * in case the user didn't click the "Return to merchant" button in the bank.
+                 * We should respond with status 200. Some banks will continue resending automated return requests otherwise.
                  */
                 
                 die('OK');
@@ -147,7 +156,7 @@ try {
             } else {
                 /**
                  * Same request can also be duplicated by the bank with VK_AUTO = 'Y'
-                 * in case the user didn't click the "Return to merchant" button on bank's site.
+                 * in case the user didn't click the "Return to merchant" button in the bank.
                  * We should respond with status 200. Some banks will continue resending automatic return requests otherwise.
                  */
                 
