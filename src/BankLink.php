@@ -650,7 +650,7 @@ abstract class BankLink
      * @throws Exception when signing fails
      * @return string MAC signature
      */
-    protected function calculateMac()
+    public function calculateMac()
     {
         $privateKeyContents = $this->privateKey;
         $privateKey = openssl_get_privatekey($privateKeyContents, $this->passPhrase);
@@ -674,7 +674,7 @@ abstract class BankLink
      * Verifies MAC if response is came from bank
      * @throws Exception when verifyng failed
      */
-    protected function verifyMac()
+    public function verifyMac()
     {
         $certificate = $this->bankCertificte;
 
