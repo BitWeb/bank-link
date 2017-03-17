@@ -50,7 +50,6 @@ try {
     $link->setAmount($amount);
     $link->setReferenceNumber($referenceNo);
     $link->setMessage($msg);
-    $link->create($service);
                 
     $link->create('1012');
     $link->calculateMac();
