@@ -293,6 +293,7 @@ abstract class BankLink
     }
 
     protected static function getParameterLength($fieldName) {
+        $fieldName = str_replace('VK_', '', $fieldName);
         return constant(Constants::class.'::'.$fieldName.'_LENGTH');
     }
 
