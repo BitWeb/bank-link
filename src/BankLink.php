@@ -639,9 +639,9 @@ abstract class BankLink
     final protected function addParameter($field, $defaultValue = null)
     {
         if (isset($this->parameters[$field]) && $this->parameters[$field] instanceof Parameter) {
-            $this->parameters[$field]->setLength(self::getParameterLength($field));
+            $this->parameters[$field]->setLength(static::getParameterLength($field));
         } else {
-            $this->parameters[$field] = new Parameter($field, $defaultValue, self::getParameterLength($field));
+            $this->parameters[$field] = new Parameter($field, $defaultValue, static::getParameterLength($field));
         }
     }
 
