@@ -14,8 +14,9 @@ final class Danske extends BankLink
 
     protected $bankId = Constants::BANK_ID;
 
-    protected static function getParameterLength($fieldName) {
-        $fieldName = str_replace('VK_', '', $fieldName);
-        return constant(Constants::class.'::'.$fieldName.'_LENGTH');
+    protected static function getParameterLength($paramKey) {
+        $paramKey = str_replace('VK_', '', $paramKey);
+        if($paramKey == 'RETURN') $paramKey = 'RETURN_URL';
+        return constant(Constants::class.'::'.$paramKey.'_LENGTH');
     }
 }
