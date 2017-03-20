@@ -17,6 +17,7 @@ final class Danske extends BankLink
     protected static function getParameterLength($paramKey) {
         $paramKey = str_replace('VK_', '', $paramKey);
         if($paramKey == 'RETURN') $paramKey = 'RETURN_URL';
+        if($paramKey == 'CANCEL') $paramKey = 'CANCEL_URL';
         return constant(Constants::class.'::'.$paramKey.'_LENGTH');
     }
 }
