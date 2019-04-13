@@ -11,7 +11,7 @@ class BankLinkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Swedbank', BankLink::getBankNameByAccountNumber('22'));
         $this->assertEquals('Swedbank', BankLink::getBankNameByAccountNumber('11'));
         $this->assertEquals('SEB', BankLink::getBankNameByAccountNumber('10'));
-        $this->assertEquals('Coop Bank', BankLink::getBankNameByAccountNumber('42'));
+        $this->assertEquals('Coop Pank', BankLink::getBankNameByAccountNumber('42'));
         $this->assertEquals('Eesti Pank', BankLink::getBankNameByAccountNumber('16'));
         $this->assertEquals('Bank DnB NORD', BankLink::getBankNameByAccountNumber('96'));
         $this->assertEquals('Luminor', BankLink::getBankNameByAccountNumber('17'));
