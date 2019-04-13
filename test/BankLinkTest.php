@@ -11,10 +11,10 @@ class BankLinkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Swedbank', BankLink::getBankNameByAccountNumber('22'));
         $this->assertEquals('Swedbank', BankLink::getBankNameByAccountNumber('11'));
         $this->assertEquals('SEB', BankLink::getBankNameByAccountNumber('10'));
-        $this->assertEquals('Krediidipank', BankLink::getBankNameByAccountNumber('42'));
+        $this->assertEquals('Coop Bank', BankLink::getBankNameByAccountNumber('42'));
         $this->assertEquals('Eesti Pank', BankLink::getBankNameByAccountNumber('16'));
         $this->assertEquals('Bank DnB NORD', BankLink::getBankNameByAccountNumber('96'));
-        $this->assertEquals('Nordea', BankLink::getBankNameByAccountNumber('17'));
+        $this->assertEquals('Luminor', BankLink::getBankNameByAccountNumber('17'));
         $this->assertEquals('Citadele Pank', BankLink::getBankNameByAccountNumber('12'));
         $this->assertEquals('Versobank', BankLink::getBankNameByAccountNumber('55'));
         $this->assertEquals('Danske', BankLink::getBankNameByAccountNumber('33'));
@@ -32,10 +32,10 @@ class BankLinkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Eesti Pank', BankLink::getBankNameByIban('EE0016'));
         $this->assertEquals('SEB', BankLink::getBankNameByIban('EE0010'));
         $this->assertEquals('Danske', BankLink::getBankNameByIban('EE0033'));
-        $this->assertEquals('Nordea', BankLink::getBankNameByIban('EE0017'));
+        $this->assertEquals('Luminor', BankLink::getBankNameByIban('EE0017'));
         $this->assertEquals('Citadele Pank', BankLink::getBankNameByIban('EE0012'));
         $this->assertEquals('Versobank', BankLink::getBankNameByIban('EE0055'));
-        $this->assertEquals('Krediidipank', BankLink::getBankNameByIban('EE0042'));
+        $this->assertEquals('Coop Pank', BankLink::getBankNameByIban('EE0042'));
         $this->assertEquals('Svenska Handelsbanken', BankLink::getBankNameByIban('EE0083'));
         $this->assertEquals('Pohjola Bank plc Eesti filiaal', BankLink::getBankNameByIban('EE0051'));
         $this->assertEquals('LHV Pank', BankLink::getBankNameByIban('EE0077'));
@@ -52,4 +52,4 @@ class BankLinkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1234561', BankLink::generateReferenceNumber('123456'));
         $this->assertEquals('6543215', BankLink::generateReferenceNumber('654321'));
     }
-} 
+}

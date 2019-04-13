@@ -173,9 +173,9 @@ abstract class BankLink
             case 33:
                 return 'Danske';
             case 17:
-                return 'Nordea';
+                return 'Luminor';
             case 42:
-                return 'Krediidipank';
+                return 'Coop Pank';
             case 16:
                 return 'Eesti Pank';
             case 55:
@@ -215,13 +215,13 @@ abstract class BankLink
             case 33:
                 return 'Danske';
             case 17:
-                return 'Nordea';
+                return 'Luminor';
             case 12:
                 return 'Citadele Pank';
             case 55:
                 return 'Versobank';
             case 42:
-                return 'Krediidipank';
+                return 'Coop Pank';
             case 83:
                 return 'Svenska Handelsbanken';
             case 51:
